@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "UEProjectLauncher (Package)": {
+      "commandName": "MsixPackage",
+      "doNotLaunchApp": true
+    },
+    "UEProjectLauncher (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
