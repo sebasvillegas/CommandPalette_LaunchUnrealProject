@@ -17,6 +17,7 @@ public partial class UEProjectLauncherCommandsProvider : CommandProvider
         Icon = IconHelpers.FromRelativePath("Assets\\StoreLogo.png");
         _commands = [
             new CommandItem(new UEProjectLauncherPage()) { Title = DisplayName },
+            new CommandItem(new UEProjectLauncherSettingsPage()) { Title = "UE-Projects Settings" }
         ];
     }
 

@@ -9,61 +9,45 @@ public static class UEProjectLauncherSettings
 {
     private const string CustomPathsKey = "CustomProjectPaths";
 
-    public static List<string> GetCustomPaths()
+    public static string RawCustomPaths
     {
-        try
+        get
         {
-            var localSettings = ApplicationData.Current.LocalSettings;
-            if (localSettings.Values.TryGetValue(CustomPathsKey, out object value) && value is string pathsStr)
+            try
             {
-                if (string.IsNullOrWhiteSpace(pathsStr))
+                var localSettings = ApplicationData.Current.LocalSettings;
+                if (localSettings.Values.TryGetValue(CustomPathsKey, out object value) && value is string pathsStr)
                 {
-                    return new List<string>();
+                    return pathsStr;
                 }
-                // Paths are stored as a semicolon-separated string
-                return pathsStr.Split(';', StringSplitOptions.RemoveEmptyEntries)
-                               .Select(p => p.Trim())
-                               .ToList();
+            }
+            catch
+            {
+            }
+            return string.Empty;
+        }
+        set
+        {
+            try
+            {
+                var localSettings = ApplicationData.Current.LocalSettings;
+                localSettings.Values[CustomPathsKey] = value;
+            }
+            catch
+            {
             }
         }
-        catch
-        {
-            // Fallback if ApplicationData fails
-        }
-
-        return new List<string>();
     }
 
-    public static void SaveCustomPaths(IEnumerable<string> paths)
+    public static List<string> GetCustomPaths()
     {
-        try
+        var pathsStr = RawCustomPaths;
+        if (string.IsNullOrWhiteSpace(pathsStr))
         {
-            var localSettings = ApplicationData.Current.LocalSettings;
-            var cleanPaths = paths.Where(p => !string.IsNullOrWhiteSpace(p)).Select(p => p.Trim());
-            localSettings.Values[CustomPathsKey] = string.Join(";", cleanPaths);
+            return new List<string>();
         }
-        catch
-        {
-            // Ignore storage errors
-        }
-    }
-
-    public static void AddCustomPath(string path)
-    {
-        var paths = GetCustomPaths();
-        if (!string.IsNullOrWhiteSpace(path) && !paths.Contains(path, StringComparer.OrdinalIgnoreCase))
-        {
-            paths.Add(path);
-            SaveCustomPaths(paths);
-        }
-    }
-
-    public static void RemoveCustomPath(string path)
-    {
-        var paths = GetCustomPaths();
-        if (paths.RemoveAll(p => string.Equals(p, path, StringComparison.OrdinalIgnoreCase)) > 0)
-        {
-            SaveCustomPaths(paths);
-        }
+        return pathsStr.Split(';', StringSplitOptions.RemoveEmptyEntries)
+                       .Select(p => p.Trim())
+                       .ToList();
     }
 }
