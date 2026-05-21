@@ -61,6 +61,7 @@
   <PropertyGroup>
     <PublishSingleFile>true</PublishSingleFile>
     <IsAotCompatible>true</IsAotCompatible>
+    <PublishReadyToRun>false</PublishReadyToRun>
 
     <CsWinRTAotOptimizerEnabled>true</CsWinRTAotOptimizerEnabled>
     <CsWinRTAotWarningLevel>2</CsWinRTAotWarningLevel>
