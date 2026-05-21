@@ -27,7 +27,7 @@ internal sealed partial class UEProjectLauncherPage : ListPage
                 new ListItem(new NoOpCommand())
                 {
                     Title = "No Unreal Engine projects found",
-                    Subtitle = "Make sure you have projects created or registered in the Epic Games Launcher."
+                    Subtitle = "Add custom directories in the extension Settings, or use the Epic Games Launcher."
                 }
             ];
         }
@@ -72,6 +72,16 @@ internal sealed partial class UEProjectLauncherPage : ListPage
             {
                 ScanDirectoryForProjects(defaultUePath, projects);
             }
+
+            // Also check custom paths defined in extension settings
+            var customPaths = UEProjectLauncherSettings.GetCustomPaths();
+            foreach (var customPath in customPaths)
+            {
+                if (Directory.Exists(customPath) && scannedDirectories.Add(customPath))
+                {
+                    ScanDirectoryForProjects(customPath, projects);
+                }
+            }
         }
         catch (Exception ex)
         {
@@ -85,9 +95,12 @@ internal sealed partial class UEProjectLauncherPage : ListPage
     {
         try
         {
+            // First check if the directory itself contains a .uproject file
+            var directFiles = Directory.GetFiles(path, "*.uproject", SearchOption.TopDirectoryOnly);
+            projects.AddRange(directFiles);
+
             // Unreal Projects are usually folders containing a .uproject file.
-            // We search top directory only to avoid deep recursive scans of large project folders.
-            // GameUserSettings.ini stores the *parent* directory of the projects.
+            // We search one level deep to avoid deep recursive scans of large folders.
             var subDirectories = Directory.GetDirectories(path);
             foreach (var dir in subDirectories)
             {

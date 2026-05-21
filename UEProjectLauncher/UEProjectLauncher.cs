@@ -15,6 +15,7 @@ public sealed partial class UEProjectLauncher : IExtension, IDisposable
     private readonly ManualResetEvent _extensionDisposedEvent;
 
     private readonly UEProjectLauncherCommandsProvider _provider = new();
+    private readonly UEProjectLauncherSettingsProvider _settingsProvider = new();
 
     public UEProjectLauncher(ManualResetEvent extensionDisposedEvent)
     {
@@ -26,6 +27,7 @@ public sealed partial class UEProjectLauncher : IExtension, IDisposable
         return providerType switch
         {
             ProviderType.Commands => _provider,
+            ProviderType.Settings => _settingsProvider,
             _ => null,
         };
     }
