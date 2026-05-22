@@ -4,13 +4,10 @@ using Microsoft.CommandPalette.Extensions.Toolkit;
 
 namespace UEProjectLauncher;
 
-// Change from FormPage to FormContent
-internal sealed partial class UEProjectLauncherSettingsPage : FormContent
+internal sealed partial class UEProjectLauncherSettingsPage : SettingsForm
 {
-    // Need to supply correct TemplateJson and StateJson
     public UEProjectLauncherSettingsPage()
     {
-        // Simple adaptive card for paths
         TemplateJson = @"
         {
             ""$schema"": ""http://adaptivecards.io/schemas/adaptive-card.json"",
@@ -55,8 +52,6 @@ internal sealed partial class UEProjectLauncherSettingsPage : FormContent
     {
         try
         {
-            // payload is JSON like {"CustomPaths":"path1;path2"}
-            // Quick and dirty parse to avoid bringing in full System.Text.Json dependencies if we don't have to
             var searchStr = "\"CustomPaths\":\"";
             var idx = payload.IndexOf(searchStr);
             if (idx >= 0)
@@ -66,7 +61,6 @@ internal sealed partial class UEProjectLauncherSettingsPage : FormContent
                 if (endIdx > startIdx)
                 {
                     var newPaths = payload.Substring(startIdx, endIdx - startIdx);
-                    // Unescape JSON slashes
                     newPaths = newPaths.Replace("\\\\", "\\");
                     UEProjectLauncherSettings.RawCustomPaths = newPaths;
                 }
