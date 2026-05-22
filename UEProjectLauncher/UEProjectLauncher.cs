@@ -6,6 +6,7 @@ using System;
 using System.Runtime.InteropServices;
 using System.Threading;
 using Microsoft.CommandPalette.Extensions;
+using Microsoft.CommandPalette.Extensions.Toolkit;
 
 namespace UEProjectLauncher;
 
@@ -15,10 +16,29 @@ public sealed partial class UEProjectLauncher : IExtension, IDisposable
     private readonly ManualResetEvent _extensionDisposedEvent;
 
     private readonly UEProjectLauncherCommandsProvider _provider = new();
+    private readonly ICommandSettings _settingsProvider;
 
     public UEProjectLauncher(ManualResetEvent extensionDisposedEvent)
     {
         this._extensionDisposedEvent = extensionDisposedEvent;
+
+        var settings = new Settings();
+        settings.Add(new TextSetting("CustomPaths", string.Join(";", UEProjectLauncherSettings.GetCustomPaths()))
+        {
+            Name = "Custom Project Search Paths",
+            Description = "Semicolon-separated list of directories to scan for .uproject files (e.g. D:\\MyGames;C:\\Work)"
+        });
+
+        settings.SettingsChanged += (s, e) =>
+        {
+            if (e.TryGetSetting("CustomPaths", out TextSetting pathSetting))
+            {
+                var newPaths = pathSetting.Value.Split(';', StringSplitOptions.RemoveEmptyEntries);
+                UEProjectLauncherSettings.SaveCustomPaths(newPaths);
+            }
+        };
+
+        _settingsProvider = settings;
     }
 
     public object? GetProvider(ProviderType providerType)
@@ -26,6 +46,7 @@ public sealed partial class UEProjectLauncher : IExtension, IDisposable
         return providerType switch
         {
             ProviderType.Commands => _provider,
+            ProviderType.Settings => _settingsProvider,
             _ => null,
         };
     }

@@ -16,15 +16,8 @@ public partial class UEProjectLauncherCommandsProvider : CommandProvider
         DisplayName = "UE-Projects";
         Icon = IconHelpers.FromRelativePath("Assets\\StoreLogo.png");
 
-        // SettingsPage implements ICommand so it can be used directly as a CommandItem
-        var settingsCommand = new CommandItem(new SettingsContentPage(new UEProjectLauncherSettingsPage()))
-        {
-            Title = "UE-Projects Settings"
-        };
-
         _commands = [
-            new CommandItem(new UEProjectLauncherPage()) { Title = DisplayName },
-            settingsCommand
+            new CommandItem(new UEProjectLauncherPage()) { Title = DisplayName }
         ];
     }
 
